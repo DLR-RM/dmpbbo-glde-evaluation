@@ -4,11 +4,10 @@ Repo for the experiments in the paper in which a novel DMP formulation is propos
 
 Running this code requires v2.1 of dmpbbo to be installed: https://github.com/stulp/dmpbbo/releases/tag/v2.1.0
 
-## Contents of the repo
-
-The main functionality for the novel formulation became available in V2.1.0 of dmpbbo, see above:
-* https://github.com/stulp/dmpbbo/releases/tag/v2.1.0
+The main functionality for the novel formulation became available in V2.1.0 of dmpbbo, see for instance:
 * https://github.com/stulp/dmpbbo/blob/c73e1418b611f31cfbe652df51f14f8c18552897/dmpbbo/dmps/Dmp.py#L101
+
+## Contents of the repo
 
 This repo provides experiments which apply this novel formulation to different datasets, which can be found in the data/ directory.
 
