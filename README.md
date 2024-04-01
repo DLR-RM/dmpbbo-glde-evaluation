@@ -19,7 +19,8 @@ The following Python scripts are provided:
 * `illustrate_richards.py`: Illustrate the  generalized logisitics function, also known as _Richard's function_.
 * `illustrate_novel_dyn_systems.py`: Illustrate the novel formulation with the generalized logisitics function. 
 * `demo_optimize_dyn_sys_parameters.py`: A generic script for optimizing the parameters of the dynamical systems in a DMP.
-
+* `presentation_training.py` and `presentation_optimization.py`: Generate plots for the ICRA presentation.
+ 
 ### Experiments
 
 * `experiment_bbo_of_dyn_systems.py`: Experiment 1 from the paper, i.e. train the different formulations on different datasets. 
