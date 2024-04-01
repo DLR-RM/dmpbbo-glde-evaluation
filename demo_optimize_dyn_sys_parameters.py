@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -22,7 +24,7 @@ class TaskFitTrajectory(Task):
             self.plot_trajectories = [self.plot_trajectories]
 
     def get_cost_labels(self):
-        return ["targets", "goal"]
+        return ["accelerations", "goal after tau"]
 
     def evaluate_rollout(self, cost_vars, sample):
         """The cost function which defines the task.
@@ -113,12 +115,17 @@ class TaskFitTrajectory(Task):
 
         for traj in self.plot_trajectories:
             if n_dims == 1 or offset > 0:
-                y = traj.ys if offset == 0 else traj.yds
+                y = {0: traj.ys, 1: traj.yds, 2: traj.ydds}[offset]
                 lines_dem = ax.plot(traj.ts, y, label="demonstration")
                 ax.set_xlim([np.min(ts_sample), np.max(ts_sample)])
             else:
                 lines_dem = ax.plot(traj.ys[:, 0], traj.ys[:, 1], label="demonstration")
-            plt.setp(lines_dem, linestyle="-", linewidth=4, color=(0.8, 0.8, 0.8))
+            #plt.setp(lines_dem, linestyle=":", linewidth=4, color="#777777")
+            plt.setp(lines_dem, color="#cad55c", linestyle='-', linewidth=6.0, alpha=0.8, zorder=1)
+
+        labels = [r"$y~(m)$", r"$\dot{y}~(m/s)$", r"$\ddot{y}~(m/s^2)$"]
+        ax.set_xlabel(r"$time (s)$")
+        ax.set_ylabel(labels[offset])
 
         return lines_rep, ax
 
@@ -152,7 +159,7 @@ class TaskSolverDmpDynSys(TaskSolver):
         elif dmp_type == "KULVICIUS_2012_JOINING":
             init_values["goal_system"] = {"alpha": dmp._goal_system.alpha}
 
-        elif "2022" in dmp_type:
+        elif "2022" in dmp_type or "SCT23" in dmp_type:
             init_values["spring_system"][
                 "damping_coefficient"
             ] = dmp._spring_system.damping_coefficient
@@ -315,7 +322,7 @@ def get_dmp_before_after(session):
     return dmps
 
 
-def main():
+def main(directory=None):
     np.set_printoptions(suppress=True)
     np.set_printoptions(precision=3)
     np.set_printoptions(linewidth=300)
@@ -347,13 +354,16 @@ def main():
     # Run the optimization
     distribution = task_solver.suggest_distribution_init()
     updater = UpdaterCovarDecay(eliteness=10, weighting_method="PI-BB", covar_decay_factor=0.97)
-    n_updates = 100
+    n_updates = 50
     n_samples_per_update = 20
     session = run_optimization_task(
         task, task_solver, distribution, updater, n_updates, n_samples_per_update
     )
 
     session.plot()
+
+    if directory:
+        session.save_all(Path(directory,dmp_type))
 
     plot_before_after(session, traj_demo)
 
