@@ -2,14 +2,15 @@ import itertools
 from pathlib import Path
 
 import numpy as np
-from matplotlib import pyplot as plt
-
 from dmpbbo.bbo.updaters import UpdaterCovarDecay
 from dmpbbo.bbo_of_dmps.run_optimization_task import run_optimization_task
 from dmpbbo.dmps.Trajectory import Trajectory
 from dmpbbo.functionapproximators.FunctionApproximatorRBFN import FunctionApproximatorRBFN
-from dmpbbo_sct_experiments.demo_optimize_dyn_sys_parameters import (TaskFitTrajectory, TaskSolverDmpDynSys,
-                                                          plot_before_after)
+from matplotlib import pyplot as plt
+
+from dmpbbo_sct_experiments.demo_optimize_dyn_sys_parameters import (TaskFitTrajectory,
+                                                                     TaskSolverDmpDynSys,
+                                                                     plot_before_after)
 from dmpbbo_sct_experiments.utils import get_demonstration, plot_error_bar
 
 
@@ -97,7 +98,7 @@ def run_optimization_with_traj(traj_demo, dmp_type, decoupled, plot_basename="")
 
 
 def main_with_demo_dir(dmp_types, demo_type, n_trajs, main_directory, axs=None):
-    """ Main function for script. """
+    """Main function for script."""
 
     trajs = []
     for traj_number in range(0, n_trajs):
@@ -164,30 +165,28 @@ def main_with_demo_dir(dmp_types, demo_type, n_trajs, main_directory, axs=None):
         after_mean = np.mean(costs_all["after"])
         color = "green" if decoupled else "blue"
         d = 0.6 if decoupled else 0.4
-        plot_error_bar(i_dmp_type+d, costs_all["after"], color, ax)
+        plot_error_bar(i_dmp_type + d, costs_all["after"], color, ax)
 
         # Connect before and after at the mean
-        ax.plot([i_dmp_type, i_dmp_type + d], [before_mean, after_mean], '-', color=color, linewidth=1)
+        ax.plot(
+            [i_dmp_type, i_dmp_type + d], [before_mean, after_mean], "-", color=color, linewidth=1
+        )
 
         ylims = {
             "stulp09compact": [0, 19],
             "stulp13learning_meka": [0, 17],
-            "coathanger23": [0, 99]
+            "coathanger23": [0, 99],
         }
-        ylims = {
-            "stulp09compact": [0, 5],
-            "stulp13learning_meka": [0, 5],
-            "coathanger23": [0, 20]
-        }
-        #ax.set_ylim(ylims[demo_type])
+        ylims = {"stulp09compact": [0, 5], "stulp13learning_meka": [0, 5], "coathanger23": [0, 20]}
+        # ax.set_ylim(ylims[demo_type])
 
         ax.set_xticks(range(len(dmp_types)))
         ax.set_xticklabels(dmp_types)
         dmp_type_labels = ["Ijs02", "Kul12", "SCT23"]
-        ax.set_xticklabels(dmp_type_labels[:len(dmp_types)])
+        ax.set_xticklabels(dmp_type_labels[: len(dmp_types)])
         ax.set_ylabel("cost")
         ax.set_yscale("log")
-        #ax.tick_params(axis="y", direction="in", pad=-25)
+        # ax.tick_params(axis="y", direction="in", pad=-25)
         ax.grid(color="#cccccc", linestyle="-", linewidth=0.5)
 
         # axs[0].tick_params(top=True, labeltop=True, bottom=False, labelbottom=False)
@@ -198,22 +197,27 @@ def main_with_demo_dir(dmp_types, demo_type, n_trajs, main_directory, axs=None):
             ylims = {
                 "stulp09compact": [0, 480],
                 "stulp13learning_meka": [0, 790],
-                "coathanger23": [0, 640]
+                "coathanger23": [0, 640],
             }
             fa_params_lims = {
                 "stulp09compact": [-15, 15],
                 "stulp13learning_meka": [-15, 15],
-                "coathanger23": [-80, 80]
+                "coathanger23": [-80, 80],
             }
 
             n_bins = 49
 
             _, bins, patches = ax.hist(
-                fa_params_all["before"], bins=n_bins, label="before", range=fa_params_lims[demo_type]
+                fa_params_all["before"],
+                bins=n_bins,
+                label="before",
+                range=fa_params_lims[demo_type],
             )
             for patch in patches:
                 patch.set_color("#cccccc")
-            counts, bins = np.histogram(fa_params_all["after"], bins=bins, range=fa_params_lims[demo_type])
+            counts, bins = np.histogram(
+                fa_params_all["after"], bins=bins, range=fa_params_lims[demo_type]
+            )
             ax.step(bins[1:], counts, "g")
 
             print(dmp_type)
@@ -227,7 +231,12 @@ def main_with_demo_dir(dmp_types, demo_type, n_trajs, main_directory, axs=None):
                 y_scale -= 0.1
                 ax.tick_params(axis="y", direction="in", pad=-25)
 
-                ax.text(0.5 * ax.get_xlim()[1], 0.5 * (sum(ax.get_ylim())), dmp_type[:12], horizontalalignment="center")
+                ax.text(
+                    0.5 * ax.get_xlim()[1],
+                    0.5 * (sum(ax.get_ylim())),
+                    dmp_type[:12],
+                    horizontalalignment="center",
+                )
 
             ax.set_xlim(fa_params_lims[demo_type])
             ax.axvline(0.0, linestyle="--", color="k")
@@ -237,7 +246,7 @@ def main_with_demo_dir(dmp_types, demo_type, n_trajs, main_directory, axs=None):
 
 def main():
 
-    main_directory = './results/bbo_of_dyn_systems'
+    main_directory = "./results/bbo_of_dyn_systems"
     dmp_types = ["IJSPEERT_2002_MOVEMENT", "KULVICIUS_2012_JOINING", "2022"]
     demo_types = ["stulp09compact", "stulp13learning_meka", "coathanger23"]
 

@@ -3,21 +3,23 @@ import pprint
 from pathlib import Path
 
 import numpy as np
-from matplotlib import pyplot as plt
-
 from dmpbbo import json_for_cpp
 from dmpbbo.bbo.updaters import UpdaterCovarDecay
+from dmpbbo.bbo_of_dmps.run_optimization_task import run_optimization_task
 from dmpbbo.bbo_of_dmps.Task import Task
 from dmpbbo.bbo_of_dmps.TaskSolver import TaskSolver
-from dmpbbo.bbo_of_dmps.run_optimization_task import run_optimization_task
 from dmpbbo.dmps.DmpContextualTwoStep import DmpContextualTwoStep
 from dmpbbo.dmps.Trajectory import Trajectory
 from dmpbbo.functionapproximators.FunctionApproximatorGPR import FunctionApproximatorGPR
 from dmpbbo.functionapproximators.FunctionApproximatorRBFN import FunctionApproximatorRBFN
-from dmpbbo.json_for_cpp import savejson, loadjson
-from dmpbbo_sct_experiments.demo_optimize_dyn_sys_parameters import (TaskFitTrajectory, TaskSolverDmpDynSys,
-                                                          get_dmp_before_after)
-from dmpbbo_sct_experiments.load_data_coathanger import load_data_coathanger, plot_traj, compute_task_params
+from dmpbbo.json_for_cpp import loadjson, savejson
+from matplotlib import pyplot as plt
+
+from dmpbbo_sct_experiments.demo_optimize_dyn_sys_parameters import (TaskFitTrajectory,
+                                                                     TaskSolverDmpDynSys,
+                                                                     get_dmp_before_after)
+from dmpbbo_sct_experiments.load_data_coathanger import (compute_task_params, load_data_coathanger,
+                                                         plot_traj)
 from dmpbbo_sct_experiments.utils import plot_error_bar
 
 
@@ -125,13 +127,7 @@ class TaskSolverDmpDynSysMultiTraj(TaskSolver):
         return cost_vars
 
 
-def run_optimization(
-        trajs,
-        dmp_type,
-        decoupled,
-        n_updates=20,
-        n_samples_per_update=10
-):
+def run_optimization(trajs, dmp_type, decoupled, n_updates=20, n_samples_per_update=10):
     """
     Optimize the dyn_sys parameters for a given set of trajectories.
 
@@ -155,7 +151,9 @@ def run_optimization(
     return dmps, session
 
 
-def run_optimization_cached(trajs, dmp_type, decoupled, directory, n_updates=50, overwrite=False, plot=False):
+def run_optimization_cached(
+    trajs, dmp_type, decoupled, directory, n_updates=50, overwrite=False, plot=False
+):
     """
     Optimize the dyn_sys parameters for a given set of trajectories, or load it from file if it is already available.
 
@@ -185,11 +183,7 @@ def run_optimization_cached(trajs, dmp_type, decoupled, directory, n_updates=50,
     # File not there or we are overwriting existing results: run optimization!
     print(f"    running optimization")
     dmps, session = run_optimization(
-        trajs,
-        dmp_type,
-        decoupled,
-        n_updates=n_updates,
-        n_samples_per_update=n_samples
+        trajs, dmp_type, decoupled, n_updates=n_updates, n_samples_per_update=n_samples
     )
 
     for before_after, filename in filenames_dict.items():
@@ -284,9 +278,11 @@ def evaluate_deprecated(dmp_contextual, params_and_trajs, tp_offset=0.0, plot_me
         maes.append(np.mean(np.abs(traj.ys - traj_reproduced.ys)))
 
         if plot_me:
-            h, axs = dmp_contextual.dmp.plot(ts, xs, xds, forcing_terms=forcing_terms, fa_outputs=fa_outputs, axs=axs)
+            h, axs = dmp_contextual.dmp.plot(
+                ts, xs, xds, forcing_terms=forcing_terms, fa_outputs=fa_outputs, axs=axs
+            )
             h_traj, _ = traj.plot(axs=axs[1:4])
-            plt.setp(h_traj, color='k', linestyle='--')
+            plt.setp(h_traj, color="k", linestyle="--")
             hs.extend(h)
 
     return np.mean(maes), hs, axs
@@ -297,7 +293,7 @@ def to_key(dmp_type, decoupled, n_trajs):
 
 
 def integrate_dmp_contextual(dmp_context, task_params, ts):
-    """ Convenience function to integrate a dmp.
+    """Convenience function to integrate a dmp.
     @return: The trajectory resulting from integrating the dmp.
     """
     xs, xds, forcing_terms, fa_outputs = dmp_context.analytical_solution(task_params, ts=ts)
@@ -305,7 +301,9 @@ def integrate_dmp_contextual(dmp_context, task_params, ts):
     return traj_repro
 
 
-def evaluate_dmp_contextual_with_traj(dmp_context, traj, task_params, index, task_params_xyz=None, axs=None, color='k'):
+def evaluate_dmp_contextual_with_traj(
+    dmp_context, traj, task_params, index, task_params_xyz=None, axs=None, color="k"
+):
     traj_repro = integrate_dmp_contextual(dmp_context, task_params, traj.ts)
 
     tp_repro = traj_repro.ys[index, 0]
@@ -321,7 +319,7 @@ def evaluate_dmp_contextual_with_traj(dmp_context, traj, task_params, index, tas
 
         xs_plot = [traj_repro.ys[index, 0], task_params_xyz[0]]
         ys_plot = [traj_repro.ys[index, 1], task_params_xyz[1]]
-        axs[3].plot(xs_plot, ys_plot, 'o-k')
+        axs[3].plot(xs_plot, ys_plot, "o-k")
 
     return traj_repro, mae_tp, mean_dist_ys
 
@@ -330,22 +328,28 @@ def evaluate_dmp_contextual(dmp_context, params_and_trajs_all, axs=None):
     # Plot training trajectories and intermediate test trajectories
     trajs_repro = []
 
-    diff_tp = {'train': []}
-    diff_ys = {'train': []}
+    diff_tp = {"train": []}
+    diff_ys = {"train": []}
     for i_task_param in [0, 2, 4, 6]:
         traj = params_and_trajs_all[i_task_param][1]
         task_params_xyz, index = compute_task_params(traj)
         task_params = np.atleast_1d(params_and_trajs_all[i_task_param][0])
 
-        traj_repro, mae_tp, mean_dist_ys = evaluate_dmp_contextual_with_traj(dmp_context, traj, task_params, index,
-                                                                             task_params_xyz=task_params_xyz,
-                                                                             axs=axs, color="#7777dd")
+        traj_repro, mae_tp, mean_dist_ys = evaluate_dmp_contextual_with_traj(
+            dmp_context,
+            traj,
+            task_params,
+            index,
+            task_params_xyz=task_params_xyz,
+            axs=axs,
+            color="#7777dd",
+        )
         trajs_repro.append((task_params, traj_repro))
-        diff_tp['train'].append(mae_tp)
-        diff_ys['train'].append(mean_dist_ys)
+        diff_tp["train"].append(mae_tp)
+        diff_ys["train"].append(mean_dist_ys)
 
-    diff_tp['interpolate'] = []
-    diff_ys['interpolate'] = []
+    diff_tp["interpolate"] = []
+    diff_ys["interpolate"] = []
     for i_task_param in [1, 3, 5]:
         traj1 = params_and_trajs_all[i_task_param - 1][1]
         traj2 = params_and_trajs_all[i_task_param + 1][1]
@@ -354,15 +358,21 @@ def evaluate_dmp_contextual(dmp_context, params_and_trajs_all, axs=None):
         task_params_xyz, index = compute_task_params(traj)
         task_params = np.atleast_1d(task_params_xyz[0])
 
-        traj_repro, mae_tp, mean_dist_ys = evaluate_dmp_contextual_with_traj(dmp_context, traj, task_params, index,
-                                                                             task_params_xyz=task_params_xyz,
-                                                                             axs=axs, color="#dd7777")
+        traj_repro, mae_tp, mean_dist_ys = evaluate_dmp_contextual_with_traj(
+            dmp_context,
+            traj,
+            task_params,
+            index,
+            task_params_xyz=task_params_xyz,
+            axs=axs,
+            color="#dd7777",
+        )
         trajs_repro.append((task_params, traj_repro))
-        diff_tp['interpolate'].append(mae_tp)
-        diff_ys['interpolate'].append(mean_dist_ys)
+        diff_tp["interpolate"].append(mae_tp)
+        diff_ys["interpolate"].append(mean_dist_ys)
 
-    diff_tp['extrapolate'] = []
-    diff_ys['extrapolate'] = []
+    diff_tp["extrapolate"] = []
+    diff_ys["extrapolate"] = []
     left_tp = params_and_trajs_all[0][0]
     left_traj = params_and_trajs_all[0][1]
     task_params_xyz, index = compute_task_params(left_traj)
@@ -372,11 +382,11 @@ def evaluate_dmp_contextual(dmp_context, params_and_trajs_all, axs=None):
         traj_repro = integrate_dmp_contextual(dmp_context, task_params, left_traj.ts)
         trajs_repro.append((task_params, traj_repro))
         mean_dist = np.mean(np.linalg.norm(traj_repro.ys - left_traj.ys, axis=1))
-        diff_ys['extrapolate'].append(mean_dist)
+        diff_ys["extrapolate"].append(mean_dist)
 
         tp_repro = traj_repro.ys[index, 0]
         diff = np.abs(tp_repro - task_params)[0]
-        diff_tp['extrapolate'].append(diff)
+        diff_tp["extrapolate"].append(diff)
 
         if axs is not None:
             hs, axs = plot_traj(traj_repro, axs)
@@ -403,17 +413,21 @@ def add_orientation(traj):
 
 
 def plot_results_list(diff_tp_list, diff_ys_list):
-    """ Plot the results as boxplots.
+    """Plot the results as boxplots.
 
     This function includes a lot of assumptions about axis limits and experiment names.
     """
     pprint.pprint(diff_ys_list)
-    diff_tp_all = {exp_key: {'train': [], 'interpolate': [], 'extrapolate': []} for exp_key in diff_ys_list[0]}
-    diff_ys_all = {exp_key: {'train': [], 'interpolate': [], 'extrapolate': []} for exp_key in diff_ys_list[0]}
+    diff_tp_all = {
+        exp_key: {"train": [], "interpolate": [], "extrapolate": []} for exp_key in diff_ys_list[0]
+    }
+    diff_ys_all = {
+        exp_key: {"train": [], "interpolate": [], "extrapolate": []} for exp_key in diff_ys_list[0]
+    }
     n_results = len(diff_ys_list)
     for i_batch in range(n_results):
         for exp_key in diff_ys_list[i_batch]:
-            for ti in ['train', 'interpolate', 'extrapolate']:
+            for ti in ["train", "interpolate", "extrapolate"]:
                 diff_ys_all[exp_key][ti].append(100 * diff_ys_list[i_batch][exp_key][ti])
                 diff_tp_all[exp_key][ti].append(100 * diff_tp_list[i_batch][exp_key][ti])
 
@@ -422,10 +436,14 @@ def plot_results_list(diff_tp_list, diff_ys_list):
     x = 0.0
     x_ticks = []
     x_ticklabels = []
-    for dmp_type in ['IJSPEERT_2002_MOVEMENT_coupled', 'KULVICIUS_2012_JOINING_coupled', '2022_decoupled']:
+    for dmp_type in [
+        "IJSPEERT_2002_MOVEMENT_coupled",
+        "KULVICIUS_2012_JOINING_coupled",
+        "2022_decoupled",
+    ]:
         print("________________________________")
         print(dmp_type)
-        before_after = 'after' if '2022' in dmp_type else 'before'
+        before_after = "after" if "2022" in dmp_type else "before"
         x += 0.8
         exp_keys_found = []
         for k in diff_ys_all:
@@ -441,19 +459,19 @@ def plot_results_list(diff_tp_list, diff_ys_list):
 
         print(cur_label)
         print(exp_key)
-        for diff, yt in zip([diff_ys_all, diff_tp_all], ['ys', 'tp']):
-            train = np.mean(diff[exp_key]['train'])
-            inter_ratio = np.mean(diff[exp_key]['interpolate']) / train
-            extra_ratio = np.mean(diff[exp_key]['extrapolate']) / train
+        for diff, yt in zip([diff_ys_all, diff_tp_all], ["ys", "tp"]):
+            train = np.mean(diff[exp_key]["train"])
+            inter_ratio = np.mean(diff[exp_key]["interpolate"]) / train
+            extra_ratio = np.mean(diff[exp_key]["extrapolate"]) / train
             print(f"  {yt}  interpolate = {inter_ratio:.2f}   extrapolate = {extra_ratio:.2f}")
 
-        colors = {'train': 'black', 'interpolate': 'orange', 'extrapolate': 'red'}
+        colors = {"train": "black", "interpolate": "orange", "extrapolate": "red"}
 
         xs = [x + d for d in [-0.25, 0, 0.25]]
         print(cur_label)
         print(exp_key)
         means = []
-        for ti, xc in zip(['train', 'interpolate', 'extrapolate'], xs):
+        for ti, xc in zip(["train", "interpolate", "extrapolate"], xs):
             mean = np.mean(diff_ys_all[exp_key][ti])
             std = np.std(diff_ys_all[exp_key][ti])
             print(f"{ti} {mean} {std}")
@@ -462,14 +480,14 @@ def plot_results_list(diff_tp_list, diff_ys_list):
             axs[0].axvline(x + 0.4, color="#cccccc", linewidth=1)
 
         means = []
-        for ti, xc in zip(['train', 'interpolate', 'extrapolate'], xs):
+        for ti, xc in zip(["train", "interpolate", "extrapolate"], xs):
             plot_error_bar(xc, diff_tp_all[exp_key][ti], colors[ti], axs[1])
             axs[1].axvline(x + 0.4, color="#cccccc", linewidth=1)
 
-    #axs[0].set_ylim([0, 11])
-    #axs[1].set_ylim([0, 20])
-    axs[0].set_ylabel('mean diff in traj (cm)')
-    axs[1].set_ylabel('diff in task parameter (cm)')
+    # axs[0].set_ylim([0, 11])
+    # axs[1].set_ylim([0, 20])
+    axs[0].set_ylabel("mean diff in traj (cm)")
+    axs[1].set_ylabel("diff in task parameter (cm)")
     for ax in axs:
         ax.set_xticks(x_ticks)
         ax.set_xticklabels(x_ticklabels, rotation=40, ha="right")
@@ -486,14 +504,16 @@ def plot_results(diff_tp, diff_ys):
         axs[0].bar(xs, [100 * v for v in diff_ys[exp_key].values()], width=w)
         axs[1].bar(xs, [100 * v for v in diff_tp[exp_key].values()], width=w)
         x += 1
-    axs[0].set_ylabel('mean diff in traj (cm)')
-    axs[1].set_ylabel('diff in task parameter (cm)')
+    axs[0].set_ylabel("mean diff in traj (cm)")
+    axs[1].set_ylabel("diff in task parameter (cm)")
     for ax in axs:
-        ax.set_xticklabels(['', 'IJS', 'KUL', 'NEW'])
+        ax.set_xticklabels(["", "IJS", "KUL", "NEW"])
         # ax.set_yscale("log")
 
 
-def main_with_trajs(experiments, params_and_trajs_all, main_directory, n_basis=10, save_for_robot=False):
+def main_with_trajs(
+    experiments, params_and_trajs_all, main_directory, n_basis=10, save_for_robot=False
+):
     """
     Do overall optimization and training for a set of experiments and trajectories.
 
@@ -552,7 +572,7 @@ def main_with_trajs(experiments, params_and_trajs_all, main_directory, n_basis=1
                     linestyles = {"before": "--", "after": "-"}
                     plt.setp(h, linestyle=linestyles[before_after])
                 for ax in axs_ppf:
-                    ax.axhline(y=0, color='r')
+                    ax.axhline(y=0, color="r")
                 plt.savefig(f"{file_path}.png")
 
             plot_trajs = False
@@ -562,8 +582,9 @@ def main_with_trajs(experiments, params_and_trajs_all, main_directory, n_basis=1
                 axs = axs.flatten()
             else:
                 axs = None
-            trajs_repro, diff_tp, diff_ys = evaluate_dmp_contextual(dmp_context, params_and_trajs_all,
-                                                                    axs=axs)
+            trajs_repro, diff_tp, diff_ys = evaluate_dmp_contextual(
+                dmp_context, params_and_trajs_all, axs=axs
+            )
 
             diff_tp = {tp: np.mean(result) for tp, result in diff_tp.items()}
             diff_ys = {tp: np.mean(result) for tp, result in diff_ys.items()}
@@ -576,9 +597,11 @@ def main_with_trajs(experiments, params_and_trajs_all, main_directory, n_basis=1
                     task_params = repro[0]
                     traj_repro = repro[1]
                     as_matrix = add_orientation(traj_repro)
-                    filename = Path("data/coathanger23_output", f"{basename}_context{task_params[0]:.3f}.csv")
+                    filename = Path(
+                        "data/coathanger23_output", f"{basename}_context{task_params[0]:.3f}.csv"
+                    )
                     print(filename)
-                    np.savetxt(filename, as_matrix, fmt="%1.5f", delimiter=',')
+                    np.savetxt(filename, as_matrix, fmt="%1.5f", delimiter=",")
 
     return diff_tp_all, diff_ys_all
 
@@ -592,7 +615,7 @@ def run_experiments_cached(main_directory, overwrite=False):
     else:
         run_experiments(main_directory)
 
-    filename = Path(main_directory, 'results.svg')
+    filename = Path(main_directory, "results.svg")
     print(f"Saving to {filename}")
     plt.savefig(filename)
     plt.show()
@@ -625,14 +648,19 @@ def run_experiments(main_directory):
 
             # Run everything for this set of trajectories
             save_for_robot = i_batch == 2 and False
-            diff_tp, diff_ys = main_with_trajs(experiments, params_and_trajs, batch_directory,
-                                               n_basis=n_basis, save_for_robot=save_for_robot)
+            diff_tp, diff_ys = main_with_trajs(
+                experiments,
+                params_and_trajs,
+                batch_directory,
+                n_basis=n_basis,
+                save_for_robot=save_for_robot,
+            )
             diff_tp_all.append(diff_tp)
             diff_ys_all.append(diff_ys)
 
             # Comment this in to see the results for each individual batch of demonstrations
-            #plot_results(diff_tp, diff_ys)
-            #plt.show()
+            # plot_results(diff_tp, diff_ys)
+            # plt.show()
 
         savejson(Path(main_directory, "diff_tp.json"), diff_tp_all)
         savejson(Path(main_directory, "diff_ys.json"), diff_ys_all)
@@ -640,7 +668,7 @@ def run_experiments(main_directory):
 
 
 def main():
-    """ Main function of the script. """
+    """Main function of the script."""
     np.set_printoptions(suppress=True)
     np.set_printoptions(precision=3)
     np.set_printoptions(linewidth=300)

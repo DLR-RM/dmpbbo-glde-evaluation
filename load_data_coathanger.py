@@ -1,7 +1,6 @@
 import numpy as np
-from matplotlib import pyplot as plt
-
 from dmpbbo.dmps.Trajectory import Trajectory
+from matplotlib import pyplot as plt
 
 
 def compute_task_params(traj):
@@ -18,12 +17,12 @@ def plot_traj(traj, axs=None, task_params_xyz=None):
     hs, _ = traj.plot(axs=axs[:3])
     h = axs[3].plot(traj.ys[:, 0], traj.ys[:, 1])
     hs.append(h)
-    axs[3].plot(task_params_xyz[0], task_params_xyz[1], 'or')
+    axs[3].plot(task_params_xyz[0], task_params_xyz[1], "or")
     h = axs[4].plot(traj.ys[:, 1], traj.ys[:, 2])
     hs.append(h)
-    axs[4].plot(task_params_xyz[1], task_params_xyz[2], 'or')
+    axs[4].plot(task_params_xyz[1], task_params_xyz[2], "or")
     for ax in axs[3:]:
-        ax.set_aspect('equal')
+        ax.set_aspect("equal")
     return hs, axs
 
 
@@ -32,12 +31,14 @@ def load_data_coathanger(i_batch, n_contexts=7, n_dims=3, axs=None):
     indices = [int(x) for x in np.round(np.linspace(0, max_n_contexts - 1, n_contexts))]
 
     params_and_trajs = []
-    cmap = plt.cm.get_cmap('copper')
+    cmap = plt.cm.get_cmap("copper")
     for context in indices:
         filename = f"data/coathanger23/traj_batch{i_batch}_context{context:02d}.txt"
         traj = Trajectory.loadtxt(filename)
         if n_dims < traj.dim:
-            traj = Trajectory(traj.ts, traj.ys[:, :n_dims], traj.yds[:, :n_dims], traj.ydds[:, :n_dims])
+            traj = Trajectory(
+                traj.ts, traj.ys[:, :n_dims], traj.yds[:, :n_dims], traj.ydds[:, :n_dims]
+            )
 
         task_params_xyz, _ = compute_task_params(traj)
         task_params = task_params_xyz[0]

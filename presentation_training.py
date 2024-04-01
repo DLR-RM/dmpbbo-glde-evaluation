@@ -1,6 +1,4 @@
 import numpy as np
-from matplotlib import pyplot as plt
-
 from dmpbbo.dmps.Dmp import Dmp
 from dmpbbo.dmps.Trajectory import Trajectory
 from dmpbbo.dynamicalsystems import SigmoidSystem
@@ -9,6 +7,8 @@ from dmpbbo.dynamicalsystems.RichardsSystem import RichardsSystem
 from dmpbbo.dynamicalsystems.SpringDamperSystem import SpringDamperSystem
 from dmpbbo.dynamicalsystems.TimeSystem import TimeSystem
 from dmpbbo.functionapproximators.FunctionApproximatorRBFN import FunctionApproximatorRBFN
+from matplotlib import pyplot as plt
+
 from dmpbbo_sct_experiments.save_plot import save_plot
 from dmpbbo_sct_experiments.utils import get_demonstration
 
@@ -21,7 +21,7 @@ def plot_dmp(tau, y_init, y_attr, transf_system, goal_system, ts, axs):
     xs, xds, _, _ = dmp.analytical_solution(ts)
 
     # Compute and plot jerk also
-    ydds = xds[:, 1 * dmp.dim_y: 2 * dmp.dim_y] / dmp.tau  # acc
+    ydds = xds[:, 1 * dmp.dim_y : 2 * dmp.dim_y] / dmp.tau  # acc
     yddds = np.gradient(ydds.squeeze(), ts)  # jerk
     axs[4].plot(ts, yddds)
     axs[4].set_ylabel(r"$jerk y$")
@@ -79,7 +79,9 @@ def main_training(traj_demo, n_samples=20):
                 )
                 dmp_args["goal_system"] = ExponentialSystem(tau, y_init, y_attr, alpha)
                 y_tau_0_ratio = 0.1
-                dmp_args["gating_system"] = SigmoidSystem.SigmoidSystem.for_gating(tau, y_tau_0_ratio)
+                dmp_args["gating_system"] = SigmoidSystem.SigmoidSystem.for_gating(
+                    tau, y_tau_0_ratio
+                )
                 dmp_args["phase_system"] = TimeSystem(tau, count_down=True)
             else:
                 # Values below found through optimization.
@@ -129,7 +131,7 @@ def main_training(traj_demo, n_samples=20):
             if plot_jerk:
                 h_jerk = axs[4].plot(traj_demo.ts, traj_demo.yddds())
                 h.append(h_jerk)
-            plt.setp(h, color="#cad55c", linestyle='-', linewidth=6.0, alpha=0.8, zorder=1)
+            plt.setp(h, color="#cad55c", linestyle="-", linewidth=6.0, alpha=0.8, zorder=1)
 
             use_fas = [False, True] if mean_sample and n_samples < 3 else [False]
             for use_fa in use_fas:
@@ -178,15 +180,15 @@ def main_training(traj_demo, n_samples=20):
         for ax in axs:
             # ax.axvline(tau, color="#999999")
             ax.set_facecolor("#fafafa")
-            ax.tick_params(color='#bbbbbb', labelcolor='#bbbbbb')
+            ax.tick_params(color="#bbbbbb", labelcolor="#bbbbbb")
             for spine in ax.spines.values():
-                spine.set_edgecolor('#bbbbbb')
+                spine.set_edgecolor("#bbbbbb")
 
         for ax in axs:
             ax.yaxis.tick_right()
-            ax.yaxis.set_ticks_position('both')
+            ax.yaxis.set_ticks_position("both")
             for label in ax.yaxis.get_ticklabels():
-                label.set_horizontalalignment('right')
+                label.set_horizontalalignment("right")
             ax.tick_params(axis="y", direction="in", pad=-5)
         if row < n_rows - 1:
             for ax in axs:
@@ -215,7 +217,7 @@ def main_training(traj_demo, n_samples=20):
     # Add 0 line
     for i_row in range(n_rows):
         for i_col in range(2, n_cols):
-            all_axs[i_row][i_col].axhline(0, color='#bbbbbb')
+            all_axs[i_row][i_col].axhline(0, color="#bbbbbb")
 
     save_plot(f"presentation_training_{n_samples:02}.svg", directory="plots")
 

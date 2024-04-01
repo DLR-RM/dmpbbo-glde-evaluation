@@ -1,8 +1,7 @@
 import numpy as np
+from dmpbbo.dmps.Trajectory import Trajectory
 from matplotlib import cm
 from matplotlib import pyplot as plt
-
-from dmpbbo.dmps.Trajectory import Trajectory
 
 
 def get_params_and_trajs(n_trajs=5, **kwargs):

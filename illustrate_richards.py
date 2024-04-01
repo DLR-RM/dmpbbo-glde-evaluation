@@ -1,7 +1,7 @@
 import numpy as np
+from dmpbbo.dynamicalsystems.RichardsSystem import RichardsSystem
 from matplotlib import pyplot as plt
 
-from dmpbbo.dynamicalsystems.RichardsSystem import RichardsSystem
 from dmpbbo_sct_experiments.save_plot import save_plot
 
 
@@ -22,7 +22,6 @@ def plot_dyn_sys(dyn_sys, axs=None, plot_past=True):
         xs, xds = dyn_sys.analytical_solution(ts)
         lines_past, _ = dyn_sys.plot(ts, xs, xds, axs=axs)
         lines.extend(lines_past)
-
 
     # Give all lines the same style
     color = lines[0].get_color()
@@ -52,7 +51,7 @@ def main():
         dyn_sys.set_left_asymp(x_left)
         axs, _ = plot_dyn_sys(dyn_sys, axs=axs, plot_past=True)
     axs[0].set_ylim([x_left - 0.1, x_attr + 0.1])
-    #save_plot("richards_system_alpha.svg")
+    # save_plot("richards_system_alpha.svg")
 
     x_init = 3.0
     x_attr = 5.0
@@ -63,7 +62,7 @@ def main():
         dyn_sys.set_left_asymp(x_init + d_x_left)
         axs, _ = plot_dyn_sys(dyn_sys, axs=axs, plot_past=True)
     axs[0].set_ylim([x_init - 0.5 - 0.1, x_attr + 0.1])
-    #save_plot("richards_system_left_asymptote.svg")
+    # save_plot("richards_system_left_asymptote.svg")
 
     axs = None
     for t_infl in range(1, 6):
@@ -73,10 +72,10 @@ def main():
 
         # Plot vertical line at inflection time
         x, xd = dyn_sys.analytical_solution(np.array([t_infl]))
-        axs[0].plot([t_infl, t_infl], [0, x], '--', color=color)
-        axs[0].plot(t_infl, x, 'o', color=color)
-        axs[1].plot([t_infl, t_infl], [0, xd], '--', color=color)
-        axs[1].plot(t_infl, xd, 'o', color=color)
+        axs[0].plot([t_infl, t_infl], [0, x], "--", color=color)
+        axs[0].plot(t_infl, x, "o", color=color)
+        axs[1].plot([t_infl, t_infl], [0, xd], "--", color=color)
+        axs[1].plot(t_infl, xd, "o", color=color)
 
     axs[0].set_ylim([x_init - 0.5 - 0.1, x_attr + 0.1])
     axs[0].set_ylim([2.6, 5.1])
@@ -94,7 +93,7 @@ def main():
         for ax in axs:
             ax.axvline(t_infl, color=color)
     axs[0].set_ylim([-0.1, 1.1])
-    #save_plot("richards_system_t_infl_decreasing.svg")
+    # save_plot("richards_system_t_infl_decreasing.svg")
 
     plt.show()
 

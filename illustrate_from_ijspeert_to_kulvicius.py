@@ -1,14 +1,14 @@
 import tikzplotlib
-
 from dmpbbo.dynamicalsystems.ExponentialSystem import ExponentialSystem
 from dmpbbo.dynamicalsystems.RichardsSystem import RichardsSystem
 from dmpbbo.dynamicalsystems.SigmoidSystem import SigmoidSystem
 from dmpbbo.dynamicalsystems.TimeSystem import TimeSystem
+
 from dmpbbo_sct_experiments.utils import *
 
 
 def main(directory=None):
-    """ Run one demo for bbo_of_dmps.
+    """Run one demo for bbo_of_dmps.
 
     @param directory: Directory to save results to
     """
@@ -56,7 +56,7 @@ def main(directory=None):
     all_axs = [fig.add_subplot(n_rows, n_cols, i + 1) for i in range(n_rows * n_cols)]
 
     for i_row, dmp_args in enumerate(all_dmp_args):
-        axs = all_axs[0 + i_row * n_cols: 5 + i_row * n_cols]
+        axs = all_axs[0 + i_row * n_cols : 5 + i_row * n_cols]
 
         function_apps = [FunctionApproximatorRBFN(n_basis, 0.9) for _ in range(n_dims)]
         dmp = Dmp.from_traj(traj_demo, function_apps, **dmp_args)

@@ -1,10 +1,11 @@
 import numpy as np
-from matplotlib import pyplot as plt
-
 from dmpbbo.bbo.updaters import UpdaterCovarDecay
 from dmpbbo.bbo_of_dmps.run_optimization_task import run_optimization_task
 from dmpbbo.dmps.Trajectory import Trajectory
-from dmpbbo_sct_experiments.demo_optimize_dyn_sys_parameters import TaskFitTrajectory, TaskSolverDmpDynSys
+from matplotlib import pyplot as plt
+
+from dmpbbo_sct_experiments.demo_optimize_dyn_sys_parameters import (TaskFitTrajectory,
+                                                                     TaskSolverDmpDynSys)
 from dmpbbo_sct_experiments.save_plot import save_plot
 from dmpbbo_sct_experiments.utils import get_demonstration
 

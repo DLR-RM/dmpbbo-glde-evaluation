@@ -1,6 +1,4 @@
 import numpy as np
-from matplotlib import pyplot as plt
-
 from demos.python.bbo_of_dmps.arm2D.TaskSolverDmpArm2D import TaskSolverDmpArm2D
 from demos.python.bbo_of_dmps.arm2D.TaskViapointArm2D import TaskViapointArm2D
 from dmpbbo.bbo.updaters import UpdaterCovarAdaptation, UpdaterCovarDecay, UpdaterMean
@@ -8,13 +6,16 @@ from dmpbbo.dmps.Dmp import Dmp
 from dmpbbo.dmps.Trajectory import Trajectory
 from dmpbbo.functionapproximators.FunctionApproximatorLWR import FunctionApproximatorLWR
 from dmpbbo.functionapproximators.FunctionApproximatorRBFN import FunctionApproximatorRBFN
+from matplotlib import pyplot as plt
+
 
 def plot_error_bar(x, data, color, ax):
     # plt.errorbar has strange bug with centering of mean. Using manual version instead.
     mean = np.mean(data)
     std = np.std(data)
-    ax.plot(x, mean, 'o', color=color)
-    return ax.plot([x, x], [ mean - std, mean + std], color=color, linewidth=2)
+    ax.plot(x, mean, "o", color=color)
+    return ax.plot([x, x], [mean - std, mean + std], color=color, linewidth=2)
+
 
 def get_demonstration(demo_name, **kwargs):
     if demo_name == "arm2D":

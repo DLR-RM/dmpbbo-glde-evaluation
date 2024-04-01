@@ -1,16 +1,16 @@
 from pathlib import Path
 
 import numpy as np
-from matplotlib import pyplot as plt
-
 from dmpbbo.bbo.DistributionGaussianBounded import DistributionGaussianBounded
 from dmpbbo.bbo.updaters import UpdaterCovarDecay
+from dmpbbo.bbo_of_dmps.run_optimization_task import run_optimization_task
 from dmpbbo.bbo_of_dmps.Task import Task
 from dmpbbo.bbo_of_dmps.TaskSolver import TaskSolver
-from dmpbbo.bbo_of_dmps.run_optimization_task import run_optimization_task
 from dmpbbo.dmps.Dmp import Dmp
 from dmpbbo.dmps.Trajectory import Trajectory
 from dmpbbo.functionapproximators.FunctionApproximatorRBFN import FunctionApproximatorRBFN
+from matplotlib import pyplot as plt
+
 from dmpbbo_sct_experiments.utils import get_demonstration
 
 
@@ -61,8 +61,8 @@ class TaskFitTrajectory(Task):
 
         # Compute difference between goal and values of y after tau
         y_after_tau = cost_vars[
-                      self.traj_length:, 1: 1 + n_dims
-                      ]  # First index is time, so start at 1
+            self.traj_length :, 1 : 1 + n_dims
+        ]  # First index is time, so start at 1
 
         # Repeat the goal
         n = y_after_tau.shape[0]
@@ -82,7 +82,7 @@ class TaskFitTrajectory(Task):
                 print(f"{diff_goal} => ({self.cost_goal_weight}) => {cost_diff_goal}")
                 # plt.plot(self.traj_demonstrated.ys)
                 length = self.traj_length
-                plt.plot(cost_vars[:length, 1: 1 + n_dims])
+                plt.plot(cost_vars[:length, 1 : 1 + n_dims])
                 plt.plot(range(length, length + n), y_goal_rep)
                 plt.plot(range(length, length + n), y_after_tau)
                 plt.plot(range(length, length + n), np.abs(y_after_tau - y_goal_rep))
@@ -94,7 +94,7 @@ class TaskFitTrajectory(Task):
         return costs
 
     def plot_rollout(self, cost_vars, ax=None):
-        """ Plot a rollout (the cost-relevant variables).
+        """Plot a rollout (the cost-relevant variables).
 
         @param cost_vars: Rollout to plot
         @param ax: Axis to plot on (default: None, then a new axis a created)
@@ -106,7 +106,7 @@ class TaskFitTrajectory(Task):
         n_dims = len(self.traj_y_final)
         ts_sample = cost_vars[:, 0]
         offset = 1  # Set to 1 / 2 to plot vel / acc respectively
-        sample = cost_vars[:, 1 + offset * n_dims: 1 + (offset + 1) * n_dims]
+        sample = cost_vars[:, 1 + offset * n_dims : 1 + (offset + 1) * n_dims]
         if n_dims == 1 or offset > 0:
             lines_rep = ax.plot(ts_sample, sample, label="reproduced")
         else:
@@ -120,8 +120,8 @@ class TaskFitTrajectory(Task):
                 ax.set_xlim([np.min(ts_sample), np.max(ts_sample)])
             else:
                 lines_dem = ax.plot(traj.ys[:, 0], traj.ys[:, 1], label="demonstration")
-            #plt.setp(lines_dem, linestyle=":", linewidth=4, color="#777777")
-            plt.setp(lines_dem, color="#cad55c", linestyle='-', linewidth=6.0, alpha=0.8, zorder=1)
+            # plt.setp(lines_dem, linestyle=":", linewidth=4, color="#777777")
+            plt.setp(lines_dem, color="#cad55c", linestyle="-", linewidth=6.0, alpha=0.8, zorder=1)
 
         labels = [r"$y~(m)$", r"$\dot{y}~(m/s)$", r"$\ddot{y}~(m/s^2)$"]
         ax.set_xlabel(r"$time (s)$")
@@ -197,7 +197,9 @@ class TaskSolverDmpDynSys(TaskSolver):
         for system in self._init_values:
             min_values[system] = {key: 0.1 * val for key, val in self._init_values[system].items()}
             max_values[system] = {key: 2.0 * val for key, val in self._init_values[system].items()}
-            covars = {key: np.square(covar_scale * p) for key, p in self._init_values[system].items()}
+            covars = {
+                key: np.square(covar_scale * p) for key, p in self._init_values[system].items()
+            }
             if not self._decoupled:
                 covars = {key: np.mean(vals) for key, vals in covars.items()}
             covar_init_dict[system] = covars
@@ -240,7 +242,7 @@ class TaskSolverDmpDynSys(TaskSolver):
                     offset += 1
                 else:
                     n = len(init_param_vals)
-                    cur_val = sample[offset: offset + n]
+                    cur_val = sample[offset : offset + n]
                     offset += n
                 params_cur[system_name][param_name] = cur_val
 
@@ -363,7 +365,7 @@ def main(directory=None):
     session.plot()
 
     if directory:
-        session.save_all(Path(directory,dmp_type))
+        session.save_all(Path(directory, dmp_type))
 
     plot_before_after(session, traj_demo)
 

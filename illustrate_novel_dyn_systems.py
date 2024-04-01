@@ -1,11 +1,11 @@
 import numpy as np
-from matplotlib import pyplot as plt
-
 from dmpbbo.dmps.Dmp import Dmp
 from dmpbbo.dmps.Trajectory import Trajectory, diffnc
 from dmpbbo.dynamicalsystems.ExponentialSystem import ExponentialSystem
 from dmpbbo.dynamicalsystems.RichardsSystem import RichardsSystem
 from dmpbbo.dynamicalsystems.SpringDamperSystem import SpringDamperSystem
+from matplotlib import pyplot as plt
+
 from dmpbbo_sct_experiments.save_plot import save_plot
 from dmpbbo_sct_experiments.utils import get_demonstration, get_function_apps
 
@@ -67,7 +67,7 @@ def plot_dmp(tau, y_init, y_attr, transf_system, goal_system, ts, axs):
     xs, xds, _, _ = dmp.analytical_solution(ts)
 
     # Compute and plot jerk also
-    ydds = xds[:, 1 * dmp.dim_y: 2 * dmp.dim_y] / dmp.tau  # acc
+    ydds = xds[:, 1 * dmp.dim_y : 2 * dmp.dim_y] / dmp.tau  # acc
     yddds = np.gradient(ydds.squeeze(), ts)  # jerk
     axs[4].plot(ts, yddds)
     axs[4].set_ylabel(r"$jerk y$")
@@ -185,9 +185,9 @@ def main_sigmoid_goal_system():
             plt.setp(markers_max, color="g")
 
             if mean_sample:
-                plt.setp(handles, color="b" , linewidth=2.0)
+                plt.setp(handles, color="b", linewidth=2.0)
             else:
-                plt.setp(handles, color="#777777" , linewidth=0.5)
+                plt.setp(handles, color="#777777", linewidth=0.5)
 
         # Samples have been plot. Now plot demo trajectory.
         h, _ = traj_demo.plot(axs[1:4])
@@ -195,7 +195,13 @@ def main_sigmoid_goal_system():
         h.append(h_jerk)
         plt.setp(h, color="r")
 
-        labels = [r"$\hat{g}~(m)$", r"$y~(m)$", r"$\dot{y}~(m/s)$", r"$\ddot{y}~(m/s^2)$", r"$\dddot{y}~(m/s^3)$"]
+        labels = [
+            r"$\hat{g}~(m)$",
+            r"$y~(m)$",
+            r"$\dot{y}~(m/s)$",
+            r"$\ddot{y}~(m/s^2)$",
+            r"$\dddot{y}~(m/s^3)$",
+        ]
         if plot_damping:
             labels.append("damp")
         for ax, label in zip(axs, labels):
@@ -210,17 +216,17 @@ def main_sigmoid_goal_system():
 
         for ax in axs:
             ax.yaxis.tick_right()
-            ax.yaxis.set_ticks_position('both')
+            ax.yaxis.set_ticks_position("both")
             for label in ax.yaxis.get_ticklabels():
-                label.set_horizontalalignment('right')
+                label.set_horizontalalignment("right")
             ax.tick_params(axis="y", direction="in", pad=-5)
-        if row < n_rows-1:
+        if row < n_rows - 1:
             for ax in axs:
                 ax.set_xlabel("")
                 ax.set_xticks([])
 
     # Share ylims between plots to facilitate visual comparison
-    for i_col in range(1,n_cols):
+    for i_col in range(1, n_cols):
         ylims = (np.infty, -np.infty)
         # Get max ranges
         for i_row in range(n_rows):
@@ -229,7 +235,7 @@ def main_sigmoid_goal_system():
         # Set max ranges on all axes in the column
         for i_row in range(n_rows):
             all_axs[i_row][i_col].set_ylim(ylims)
-            if i_col == 1: # i_col==1 and i_col==0 share the same axes
+            if i_col == 1:  # i_col==1 and i_col==0 share the same axes
                 all_axs[i_row][0].set_ylim(ylims)
 
     i_col = 4
