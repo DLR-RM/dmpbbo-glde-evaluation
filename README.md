@@ -1,6 +1,6 @@
-# dmpbbo_sct_experiments
+# dmpbbo-glde 
 
-Repo for the experiments in the paper in which a novel DMP formulation is proposed. 
+Repo for the experiments ICRA 2024 paper "Fitting Parameters of Linear Dynamical Systems\\to Regularize Forcing Terms in Dynamical Movement Primitives" in which a novel DMP formulation is proposed. 
 
 Running this code requires v2.1 of dmpbbo to be installed: https://github.com/stulp/dmpbbo/releases/tag/v2.1.0
 
@@ -29,7 +29,6 @@ The following Python scripts are provided:
 
 ### Helper modules
 
-* `get_params_and_trajs.py`: Generate synthetic data (not used in the experiments)  
 * `load_data_coathanger.py`: Load the coathanger data.
 * `save_plot.py`: Module with convenience function for saving a plot to SVG or other formats. 
 * `colorpallette.py`: Some default colors.

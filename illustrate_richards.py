@@ -1,3 +1,4 @@
+""" Module to illustrate the Richard's system, aka the generalized logistic differential equation. """
 import numpy as np
 from dmpbbo.dynamicalsystems.RichardsSystem import RichardsSystem
 from matplotlib import pyplot as plt
@@ -6,6 +7,14 @@ from dmpbbo_sct_experiments.save_plot import save_plot
 
 
 def plot_dyn_sys(dyn_sys, axs=None, plot_past=True):
+    """
+    Plot a dynamical system.
+
+    @param dyn_sys: The dynamical system
+    @param axs: The axes to plot on
+    @param plot_past: Whether to plot before t=0 also.
+    @return: The axes and the color used for plotting.
+    """
     tau = dyn_sys.tau
 
     xlims = [0.0, tau * 1.3]
@@ -15,6 +24,7 @@ def plot_dyn_sys(dyn_sys, axs=None, plot_past=True):
     xs, xds = dyn_sys.integrate(ts)
     lines, axs = dyn_sys.plot(ts, xs, xds, axs=axs)
 
+    lines_past = None
     if plot_past:
         # Graph before t=0
         xlims[0] = -0.5 * tau
@@ -38,6 +48,10 @@ def plot_dyn_sys(dyn_sys, axs=None, plot_past=True):
 
 
 def main():
+    """
+    Main function.
+    """
+
     tau = 6.0
     x_left = 0.0
     x_init = 0.2

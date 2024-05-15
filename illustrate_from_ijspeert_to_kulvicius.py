@@ -1,4 +1,7 @@
+""" Module to plot the effect of going from the Ijspeert to the Kulvicius formulation. """
 import tikzplotlib
+
+from dmpbbo.dmps.Dmp import Dmp
 from dmpbbo.dynamicalsystems.ExponentialSystem import ExponentialSystem
 from dmpbbo.dynamicalsystems.RichardsSystem import RichardsSystem
 from dmpbbo.dynamicalsystems.SigmoidSystem import SigmoidSystem
@@ -7,10 +10,8 @@ from dmpbbo.dynamicalsystems.TimeSystem import TimeSystem
 from dmpbbo_sct_experiments.utils import *
 
 
-def main(directory=None):
+def main():
     """Run one demo for bbo_of_dmps.
-
-    @param directory: Directory to save results to
     """
 
     demo_name = "stulp09compact"
@@ -48,7 +49,7 @@ def main(directory=None):
         },
     ]
 
-    ts = np.arange(0.0, 1.25 * traj_demo.duration, traj_demo._dt_mean)
+    ts = np.arange(0.0, 1.25 * traj_demo.duration, traj_demo.dt_mean)
 
     n_cols = 5
     n_rows = len(all_dmp_args)

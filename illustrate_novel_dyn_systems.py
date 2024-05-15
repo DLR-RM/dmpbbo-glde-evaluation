@@ -1,6 +1,6 @@
 import numpy as np
 from dmpbbo.dmps.Dmp import Dmp
-from dmpbbo.dmps.Trajectory import Trajectory, diffnc
+from dmpbbo.dmps.Trajectory import Trajectory
 from dmpbbo.dynamicalsystems.ExponentialSystem import ExponentialSystem
 from dmpbbo.dynamicalsystems.RichardsSystem import RichardsSystem
 from dmpbbo.dynamicalsystems.SpringDamperSystem import SpringDamperSystem

@@ -1,16 +1,17 @@
+""" Module to run a demo of the optimization of the dyn-sys parameters of the DMP. """
 from pathlib import Path
 
 import numpy as np
+from matplotlib import pyplot as plt
+
 from dmpbbo.bbo.DistributionGaussianBounded import DistributionGaussianBounded
 from dmpbbo.bbo.updaters import UpdaterCovarDecay
-from dmpbbo.bbo_of_dmps.run_optimization_task import run_optimization_task
 from dmpbbo.bbo_of_dmps.Task import Task
 from dmpbbo.bbo_of_dmps.TaskSolver import TaskSolver
+from dmpbbo.bbo_of_dmps.run_optimization_task import run_optimization_task
 from dmpbbo.dmps.Dmp import Dmp
 from dmpbbo.dmps.Trajectory import Trajectory
 from dmpbbo.functionapproximators.FunctionApproximatorRBFN import FunctionApproximatorRBFN
-from matplotlib import pyplot as plt
-
 from dmpbbo_sct_experiments.utils import get_demonstration
 
 
@@ -61,8 +62,8 @@ class TaskFitTrajectory(Task):
 
         # Compute difference between goal and values of y after tau
         y_after_tau = cost_vars[
-            self.traj_length :, 1 : 1 + n_dims
-        ]  # First index is time, so start at 1
+                      self.traj_length:, 1: 1 + n_dims
+                      ]  # First index is time, so start at 1
 
         # Repeat the goal
         n = y_after_tau.shape[0]
@@ -82,7 +83,7 @@ class TaskFitTrajectory(Task):
                 print(f"{diff_goal} => ({self.cost_goal_weight}) => {cost_diff_goal}")
                 # plt.plot(self.traj_demonstrated.ys)
                 length = self.traj_length
-                plt.plot(cost_vars[:length, 1 : 1 + n_dims])
+                plt.plot(cost_vars[:length, 1: 1 + n_dims])
                 plt.plot(range(length, length + n), y_goal_rep)
                 plt.plot(range(length, length + n), y_after_tau)
                 plt.plot(range(length, length + n), np.abs(y_after_tau - y_goal_rep))
@@ -106,7 +107,7 @@ class TaskFitTrajectory(Task):
         n_dims = len(self.traj_y_final)
         ts_sample = cost_vars[:, 0]
         offset = 1  # Set to 1 / 2 to plot vel / acc respectively
-        sample = cost_vars[:, 1 + offset * n_dims : 1 + (offset + 1) * n_dims]
+        sample = cost_vars[:, 1 + offset * n_dims: 1 + (offset + 1) * n_dims]
         if n_dims == 1 or offset > 0:
             lines_rep = ax.plot(ts_sample, sample, label="reproduced")
         else:
@@ -189,6 +190,12 @@ class TaskSolverDmpDynSys(TaskSolver):
         return np.asarray(params_list)
 
     def suggest_distribution_init(self, covar_scale=0.25):
+        """
+        Compute the initial distribution from the _init_values member.
+
+        @param covar_scale: The covariance diagonal value, i.e. scale*range for the range in _init_values.
+        @return: The initialized distribution.
+        """
         mean_init = self._params_dict_to_array(self._init_values)
 
         min_values = {}  # noqa
@@ -227,10 +234,13 @@ class TaskSolverDmpDynSys(TaskSolver):
         )
         return distribution
 
-    def initial_dyn_sys_params_deprecated(self):
-        return self._init_values
-
     def get_dmp(self, sample):
+        """
+        Generate a DMP, given a sample from the distribution
+
+        @param sample: The sample from the distribution
+        @return: The DMP, in which the dynsys parameters have been initialized with the values in the sample.
+        """
         params_cur = {}
         offset = 0
         for system_name in self._init_values:
@@ -242,7 +252,7 @@ class TaskSolverDmpDynSys(TaskSolver):
                     offset += 1
                 else:
                     n = len(init_param_vals)
-                    cur_val = sample[offset : offset + n]
+                    cur_val = sample[offset: offset + n]
                     offset += n
                 params_cur[system_name][param_name] = cur_val
 
@@ -274,6 +284,13 @@ class TaskSolverDmpDynSys(TaskSolver):
 
 
 def plot_before_after(session, traj, directory=None):
+    """
+    Plot the DMP before and after optimization
+
+    @param session: The learning session from which to plot from.
+    @param traj: The demonstrated trajectory.
+    @param directory: The directory to which to save the results to.
+    """
     colors = {"before": "red", "after": "green"}
 
     axs_dmp = None
@@ -314,6 +331,12 @@ def plot_before_after(session, traj, directory=None):
 
 
 def get_dmp_before_after(session):
+    """
+    Get the DMP before and after optimization
+
+    @param session: The learning session from which to get the DMPs.
+    @return: A list with 2 dmps (before and after optimization)
+    """
     dmps = {}
     n_updates = session.get_n_updates()
     for label, i_update in {"before": 0, "after": n_updates - 1}.items():
@@ -325,12 +348,17 @@ def get_dmp_before_after(session):
 
 
 def main(directory=None):
+    """
+    Main script.
+
+    @param directory: Directory to save results to.
+    """
     np.set_printoptions(suppress=True)
     np.set_printoptions(precision=3)
     np.set_printoptions(linewidth=300)
 
-    ts = np.linspace(0.0, 1.0, 101)
-    traj_demo = Trajectory.from_min_jerk(ts, np.array([0.5]), np.array([1.5]))
+    # ts = np.linspace(0.0, 1.0, 101)
+    # traj_demo = Trajectory.from_min_jerk(ts, np.array([0.5]), np.array([1.5]))
 
     demo_name = "stulp09compact"
     # demo_name = "stulp13learning_meka"

@@ -1,9 +1,18 @@
+""" Module for saving a figure to a to file. """
 from pathlib import Path
 
 from matplotlib import pyplot as plt
 
 
 def save_plot(filename, image_format=".svg", **kwargs):
+    """
+    Save a plot to a file.
+
+    @param filename: The name of the file
+    @param image_format: The format of the image (passed to plt.savefig(filename)).
+    @param kwargs:
+        "directory": directory to save to (default: "plots")
+    """
     directory = Path(kwargs.get("directory", "plots"))
 
     if ".py" in filename:
