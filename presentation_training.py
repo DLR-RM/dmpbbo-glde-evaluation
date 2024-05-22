@@ -52,7 +52,6 @@ def main_training(traj_demo, n_samples=20):
     for row, name in enumerate(names):
 
         axs = all_axs[row]
-        markers_max = []
 
         for i_sample in range(n_samples):
             mean_sample = i_sample > n_samples - 2
@@ -207,12 +206,6 @@ def main_training(traj_demo, n_samples=20):
             all_axs[i_row][i_col].set_ylim(ylims)
             if i_col == 1:  # i_col==1 and i_col==0 share the same axes
                 all_axs[i_row][0].set_ylim(ylims)
-
-    if plot_jerk:
-        i_col = 4
-        # Set max ranges on all axes in the column
-        # for i_row in range(n_rows):
-        #    all_axs[i_row][i_col].set_ylim([-23000, 14000])
 
     # Add 0 line
     for i_row in range(n_rows):

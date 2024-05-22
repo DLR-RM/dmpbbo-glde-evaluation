@@ -1,3 +1,4 @@
+""" Module to perform BBO on dynamical system parameters. """
 import itertools
 from pathlib import Path
 
@@ -14,41 +15,16 @@ from demo_optimize_dyn_sys_parameters import (TaskFitTrajectory,
 from utils import get_demonstration, plot_error_bar
 
 
-def main_one():
-    # 3, 0 very nice for overshooting
-    traj = get_demonstration("stulp13learning_meka", traj_number=3)
-    d = 0
-    traj_demo = Trajectory(traj.ts, traj.ys[:, d], traj.yds[:, d], traj.ydds[:, d])
-
-    # Create task
-    goal_cost_weight = 1000.0
-    traj_y_final = traj_demo.y_final
-    traj_length = traj_demo.length
-    task = TaskFitTrajectory(
-        traj_y_final, traj_length, goal_cost_weight, plot_trajectories=traj_demo
-    )
-
-    # Create task solver
-    dmp_types = ["IJSPEERT_2002_MOVEMENT", "KULVICIUS_2012_JOINING", "2022"]
-    task_solver = TaskSolverDmpDynSys(traj_demo, dmp_types[2])
-
-    # Run the optimization
-    distribution = task_solver.suggest_distribution_init()
-    updater = UpdaterCovarDecay(eliteness=10, weighting_method="PI-BB", covar_decay_factor=0.9)
-    n_updates = 20
-    n_samples_per_update = 10
-    session = run_optimization_task(
-        task, task_solver, distribution, updater, n_updates, n_samples_per_update
-    )
-
-    # Plot results
-    plot_before_after(session, traj_demo)
-    session.plot()
-
-    plt.show()
-
-
 def run_optimization_with_traj(traj_demo, dmp_type, decoupled, plot_basename=""):
+    """
+    Run BBO for one specific trajectory
+
+    @param traj_demo: The demonstrated trajectory
+    @param dmp_type: The DMP formulation to use.
+    @param decoupled:  Whether the dyn-sys parameters are couple (same for each dimension) or decoupled.
+    @param plot_basename: Basename of the files to save the plots to.
+    @return:
+    """
     # Create task
     goal_cost_weight = 1000.0
     traj_y_final = traj_demo.y_final
@@ -98,8 +74,15 @@ def run_optimization_with_traj(traj_demo, dmp_type, decoupled, plot_basename="")
 
 
 def main_with_demo_dir(dmp_types, demo_type, n_trajs, main_directory, axs=None):
-    """Main function for script."""
+    """
+    Run BBO and save results to directory.
 
+    @param dmp_types: DMP formulations to run experiments for.
+    @param demo_type: The demp type, i.e. which dataset.
+    @param n_trajs: The number of trajectories to read from the dataset (12 in the paper)
+    @param main_directory: The main directory to write results to.
+    @param axs: Axes on which to plot the results.
+    """
     trajs = []
     for traj_number in range(0, n_trajs):
         traj = Trajectory.loadtxt(f"data/{demo_type}/traj{traj_number:03}.txt")
@@ -172,12 +155,12 @@ def main_with_demo_dir(dmp_types, demo_type, n_trajs, main_directory, axs=None):
             [i_dmp_type, i_dmp_type + d], [before_mean, after_mean], "-", color=color, linewidth=1
         )
 
-        ylims = {
-            "stulp09compact": [0, 19],
-            "stulp13learning_meka": [0, 17],
-            "coathanger23": [0, 99],
-        }
-        ylims = {"stulp09compact": [0, 5], "stulp13learning_meka": [0, 5], "coathanger23": [0, 20]}
+        #ylims = {
+        #    "stulp09compact": [0, 19],
+        #    "stulp13learning_meka": [0, 17],
+        #    "coathanger23": [0, 99],
+        #}
+        #ylims = {"stulp09compact": [0, 5], "stulp13learning_meka": [0, 5], "coathanger23": [0, 20]}
         # ax.set_ylim(ylims[demo_type])
 
         ax.set_xticks(range(len(dmp_types)))
@@ -245,6 +228,7 @@ def main_with_demo_dir(dmp_types, demo_type, n_trajs, main_directory, axs=None):
 
 
 def main():
+    """Main function for script."""
 
     main_directory = "./results/bbo_of_dyn_systems"
     dmp_types = ["IJSPEERT_2002_MOVEMENT", "KULVICIUS_2012_JOINING", "2022"]
@@ -268,3 +252,42 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def main_one():
+    """
+    Run one BBO with specific settings.
+
+    Code no longer used.
+    """
+    # 3, 0 very nice for overshooting
+    traj = get_demonstration("stulp13learning_meka", traj_number=3)
+    d = 0
+    traj_demo = Trajectory(traj.ts, traj.ys[:, d], traj.yds[:, d], traj.ydds[:, d])
+
+    # Create task
+    goal_cost_weight = 1000.0
+    traj_y_final = traj_demo.y_final
+    traj_length = traj_demo.length
+    task = TaskFitTrajectory(
+        traj_y_final, traj_length, goal_cost_weight, plot_trajectories=traj_demo
+    )
+
+    # Create task solver
+    dmp_types = ["IJSPEERT_2002_MOVEMENT", "KULVICIUS_2012_JOINING", "2022"]
+    task_solver = TaskSolverDmpDynSys(traj_demo, dmp_types[2])
+
+    # Run the optimization
+    distribution = task_solver.suggest_distribution_init()
+    updater = UpdaterCovarDecay(eliteness=10, weighting_method="PI-BB", covar_decay_factor=0.9)
+    n_updates = 20
+    n_samples_per_update = 10
+    session = run_optimization_task(
+        task, task_solver, distribution, updater, n_updates, n_samples_per_update
+    )
+
+    # Plot results
+    plot_before_after(session, traj_demo)
+    session.plot()
+
+    plt.show()

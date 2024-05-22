@@ -1,6 +1,7 @@
+""" Module to show differences between DMP formulations."""
 import pprint
 
-from dmpbbo.dmps import Dmp
+from dmpbbo.dmps.Dmp import Dmp
 from dmpbbo.dynamicalsystems.ExponentialSystem import ExponentialSystem
 from dmpbbo.dynamicalsystems.SigmoidSystem import SigmoidSystem
 from dmpbbo.dynamicalsystems.SpringDamperSystem import SpringDamperSystem
@@ -11,6 +12,15 @@ from utils import *
 
 
 def get_dmp_local(demonstration, dmp_type, fa_name, n_basis=30):
+    """
+    Get a DMP (version local to this module)
+
+    @param demonstration: the demonstrated trajectory
+    @param dmp_type: The DMP formulation
+    @param fa_name: The name of the function approximator.
+    @param n_basis: The number of basis functions for the function approximator.
+    @return:
+    """
     # Prepare the function approximators
     n_dofs = demonstration.dim
     function_apps = get_function_apps(n_dofs, fa_name, n_basis)
@@ -61,10 +71,8 @@ def get_dmp_local(demonstration, dmp_type, fa_name, n_basis=30):
     return dmp
 
 
-def main(directory=None):
+def main():
     """Run one demo for bbo_of_dmps.
-
-    @param directory: Directory to save results to
     """
 
     # demo_name = "stulp09compact"

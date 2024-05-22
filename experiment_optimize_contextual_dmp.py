@@ -1,3 +1,4 @@
+"""Module to evaluate impact of dynsys parameter optimization on a contextual DMP."""
 import copy
 import pprint
 from pathlib import Path
@@ -78,9 +79,18 @@ class TaskSolverDmpDynSysMultiTraj(TaskSolver):
         self.task_solver = TaskSolverDmpDynSys(train_traj, dmp_type, decoupled)
 
     def suggest_distribution_init(self):
+        """
+        Ask this task for a good initial distribution.
+        @return: An initial distribution for optimization.
+        """
         return self.task_solver.suggest_distribution_init()
 
     def get_dmp(self, sample):
+        """
+        Get a DMP, given a sample.
+        @param sample: The sample to return the DMP for.
+        @return: The DMP, whose dyn-sys parameters are initialized based on the sample.
+        """
         return self.task_solver.get_dmp(sample)
 
     def perform_rollout(self, sample, **kwargs):
@@ -289,6 +299,14 @@ def evaluate_deprecated(dmp_contextual, params_and_trajs, tp_offset=0.0, plot_me
 
 
 def to_key(dmp_type, decoupled, n_trajs):
+    """
+    Convenience function to generate a key from certain parameters.
+
+    @param dmp_type: The DMP formulation.
+    @param decoupled: Whether the optimization is done separately for each DMP dimension (decoupled)
+    @param n_trajs: The number of trajectories used for training.
+    @return: A unique key for these parameters.
+    """
     return f"dmp{dmp_type}_{'de' if decoupled else ''}coupled_ntrajs{n_trajs:02d}"
 
 
@@ -304,6 +322,18 @@ def integrate_dmp_contextual(dmp_context, task_params, ts):
 def evaluate_dmp_contextual_with_traj(
     dmp_context, traj, task_params, index, task_params_xyz=None, axs=None, color="k"
 ):
+    """
+    Evaluate a given contextual DMP.
+
+    @param dmp_context: The contextual DMP to evaluate.
+    @param traj: The demonstrated trajectory (which it should reproduce)
+    @param task_params: The task-parameters for which to generate a trajectory.
+    @param index: The index of the dimension to reproduce.
+    @param axs: The axes to plot on.
+    @param color: The color for plotting.
+    @return: A tuple containing 1) the reproduced trajectory 2) the mean absolute error (MAE)
+    between the demonstrated and reproduced task parameter. 3) the MAE between the trajectories
+    """
     traj_repro = integrate_dmp_contextual(dmp_context, task_params, traj.ts)
 
     tp_repro = traj_repro.ys[index, 0]
@@ -325,6 +355,14 @@ def evaluate_dmp_contextual_with_traj(
 
 
 def evaluate_dmp_contextual(dmp_context, params_and_trajs_all, axs=None):
+    """
+    Evaluate a contextual DMP.
+    @param dmp_context: The contextual DMP.
+    @param params_and_trajs_all: A list of task parameters and corresponding trajectories.
+    @param axs: The axes to plot on.
+    @return: A tuple containing 1) the reproduced trajectory 2) the mean absolute error (MAE)
+    between the demonstrated and reproduced task parameter. 3) the MAE between the trajectories
+    """
     # Plot training trajectories and intermediate test trajectories
     trajs_repro = []
 
@@ -470,7 +508,7 @@ def plot_results_list(diff_tp_list, diff_ys_list):
         xs = [x + d for d in [-0.25, 0, 0.25]]
         print(cur_label)
         print(exp_key)
-        means = []
+        #means = []
         for ti, xc in zip(["train", "interpolate", "extrapolate"], xs):
             mean = np.mean(diff_ys_all[exp_key][ti])
             std = np.std(diff_ys_all[exp_key][ti])
@@ -479,7 +517,7 @@ def plot_results_list(diff_tp_list, diff_ys_list):
             plot_error_bar(xc, diff_ys_all[exp_key][ti], colors[ti], axs[0])
             axs[0].axvline(x + 0.4, color="#cccccc", linewidth=1)
 
-        means = []
+        #means = []
         for ti, xc in zip(["train", "interpolate", "extrapolate"], xs):
             plot_error_bar(xc, diff_tp_all[exp_key][ti], colors[ti], axs[1])
             axs[1].axvline(x + 0.4, color="#cccccc", linewidth=1)
@@ -494,6 +532,11 @@ def plot_results_list(diff_tp_list, diff_ys_list):
 
 
 def plot_results(diff_tp, diff_ys):
+    """
+    Plot the results, i.e. the differencences between demonstrated and reproduced.
+    @param diff_tp: Difference in task parameter space
+    @param diff_ys: Difference in XYZ space.
+    """
     # pprint.pprint(diff_tp_all)
     # pprint.pprint(diff_ys_all)
     fig, axs = plt.subplots(1, 2)
@@ -607,6 +650,11 @@ def main_with_trajs(
 
 
 def run_experiments_cached(main_directory, overwrite=False):
+    """
+    This loads experiments from a directory, or runs/saves them if they are not available there.
+    @param main_directory: The main directory from which to read or write.
+    @param overwrite: Overwrites exisiting results.
+    """
     if Path(main_directory, "diff_tp.json").exists() and not overwrite:
         diff_tp_all = loadjson(Path(main_directory, "diff_tp.json"))
         diff_ys_all = loadjson(Path(main_directory, "diff_ys.json"))
@@ -622,6 +670,10 @@ def run_experiments_cached(main_directory, overwrite=False):
 
 
 def run_experiments(main_directory):
+    """
+    Run all experiments and read or write them from a directory
+    @param main_directory: The directory to read/write from.
+    """
     experiments = [
         # dmp_type, decoupled
         ("IJSPEERT_2002_MOVEMENT", False),
