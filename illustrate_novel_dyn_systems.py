@@ -6,8 +6,8 @@ from dmpbbo.dynamicalsystems.RichardsSystem import RichardsSystem
 from dmpbbo.dynamicalsystems.SpringDamperSystem import SpringDamperSystem
 from matplotlib import pyplot as plt
 
-from dmpbbo_sct_experiments.save_plot import save_plot
-from dmpbbo_sct_experiments.utils import get_demonstration, get_function_apps
+from save_plot import save_plot
+from utils import get_demonstration, get_function_apps
 
 
 def plot_dyn_sys(axs, **kwargs):

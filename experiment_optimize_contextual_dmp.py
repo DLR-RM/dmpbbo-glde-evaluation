@@ -15,12 +15,12 @@ from dmpbbo.functionapproximators.FunctionApproximatorRBFN import FunctionApprox
 from dmpbbo.json_for_cpp import loadjson, savejson
 from matplotlib import pyplot as plt
 
-from dmpbbo_sct_experiments.demo_optimize_dyn_sys_parameters import (TaskFitTrajectory,
+from demo_optimize_dyn_sys_parameters import (TaskFitTrajectory,
                                                                      TaskSolverDmpDynSys,
                                                                      get_dmp_before_after)
-from dmpbbo_sct_experiments.load_data_coathanger import (compute_task_params, load_data_coathanger,
+from load_data_coathanger import (compute_task_params, load_data_coathanger,
                                                          plot_traj)
-from dmpbbo_sct_experiments.utils import plot_error_bar
+from utils import plot_error_bar
 
 
 class TaskFitMultiTrajectory(Task):

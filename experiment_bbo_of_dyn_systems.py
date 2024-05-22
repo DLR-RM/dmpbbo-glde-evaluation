@@ -8,10 +8,10 @@ from dmpbbo.dmps.Trajectory import Trajectory
 from dmpbbo.functionapproximators.FunctionApproximatorRBFN import FunctionApproximatorRBFN
 from matplotlib import pyplot as plt
 
-from dmpbbo_sct_experiments.demo_optimize_dyn_sys_parameters import (TaskFitTrajectory,
+from demo_optimize_dyn_sys_parameters import (TaskFitTrajectory,
                                                                      TaskSolverDmpDynSys,
                                                                      plot_before_after)
-from dmpbbo_sct_experiments.utils import get_demonstration, plot_error_bar
+from utils import get_demonstration, plot_error_bar
 
 
 def main_one():

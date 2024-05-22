@@ -12,7 +12,7 @@ from dmpbbo.bbo_of_dmps.run_optimization_task import run_optimization_task
 from dmpbbo.dmps.Dmp import Dmp
 from dmpbbo.dmps.Trajectory import Trajectory
 from dmpbbo.functionapproximators.FunctionApproximatorRBFN import FunctionApproximatorRBFN
-from dmpbbo_sct_experiments.utils import get_demonstration
+from utils import get_demonstration
 
 
 class TaskFitTrajectory(Task):

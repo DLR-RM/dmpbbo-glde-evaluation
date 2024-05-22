@@ -4,10 +4,10 @@ from dmpbbo.bbo_of_dmps.run_optimization_task import run_optimization_task
 from dmpbbo.dmps.Trajectory import Trajectory
 from matplotlib import pyplot as plt
 
-from dmpbbo_sct_experiments.demo_optimize_dyn_sys_parameters import (TaskFitTrajectory,
+from demo_optimize_dyn_sys_parameters import (TaskFitTrajectory,
                                                                      TaskSolverDmpDynSys)
-from dmpbbo_sct_experiments.save_plot import save_plot
-from dmpbbo_sct_experiments.utils import get_demonstration
+from save_plot import save_plot
+from utils import get_demonstration
 
 
 def main_optimization(traj_demo, dmp_type="2022", n_updates=30, n_samples_per_update=10):

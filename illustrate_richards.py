@@ -3,7 +3,7 @@ import numpy as np
 from dmpbbo.dynamicalsystems.RichardsSystem import RichardsSystem
 from matplotlib import pyplot as plt
 
-from dmpbbo_sct_experiments.save_plot import save_plot
+from save_plot import save_plot
 
 
 def plot_dyn_sys(dyn_sys, axs=None, plot_past=True):

@@ -9,8 +9,8 @@ from dmpbbo.dynamicalsystems.TimeSystem import TimeSystem
 from dmpbbo.functionapproximators.FunctionApproximatorRBFN import FunctionApproximatorRBFN
 from matplotlib import pyplot as plt
 
-from dmpbbo_sct_experiments.save_plot import save_plot
-from dmpbbo_sct_experiments.utils import get_demonstration
+from save_plot import save_plot
+from utils import get_demonstration
 
 
 def plot_dmp(tau, y_init, y_attr, transf_system, goal_system, ts, axs):

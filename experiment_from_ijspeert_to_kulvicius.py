@@ -1,12 +1,13 @@
 import pprint
 
+from dmpbbo.dmps import Dmp
 from dmpbbo.dynamicalsystems.ExponentialSystem import ExponentialSystem
 from dmpbbo.dynamicalsystems.SigmoidSystem import SigmoidSystem
 from dmpbbo.dynamicalsystems.SpringDamperSystem import SpringDamperSystem
 from dmpbbo.dynamicalsystems.TimeSystem import TimeSystem
 
-from dmpbbo_sct_experiments.save_plot import save_plot
-from dmpbbo_sct_experiments.utils import *
+from save_plot import save_plot
+from utils import *
 
 
 def get_dmp_local(demonstration, dmp_type, fa_name, n_basis=30):

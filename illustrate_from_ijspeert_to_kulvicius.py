@@ -7,7 +7,7 @@ from dmpbbo.dynamicalsystems.RichardsSystem import RichardsSystem
 from dmpbbo.dynamicalsystems.SigmoidSystem import SigmoidSystem
 from dmpbbo.dynamicalsystems.TimeSystem import TimeSystem
 
-from dmpbbo_sct_experiments.utils import *
+from utils import *
 
 
 def main():
